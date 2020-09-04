@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\fmt">
+      <UniqueIdentifier>{f3866ded-8281-4aa5-9590-937c716a146e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\fmt">
+      <UniqueIdentifier>{2422301c-9281-4f49-9014-af69b53e53cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\crc32">
+      <UniqueIdentifier>{fbbfe752-5d12-4b60-a525-645678d1ee48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\crc32">
+      <UniqueIdentifier>{8d0e70cf-ab12-4c95-a42e-f9baba1b6e5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\date">
+      <UniqueIdentifier>{75d32b33-09a2-4dc6-b603-d3bf38cd2415}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\date">
+      <UniqueIdentifier>{88efa10a-b67e-4a71-9252-7606cc612dd4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="crc32_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\fmt\format.cc">
+      <Filter>Source Files\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="include\fmt\os.cc">
+      <Filter>Source Files\fmt</Filter>
+    </ClCompile>
+    <ClCompile Include="include\crc32\Crc32.cpp">
+      <Filter>Source Files\crc32</Filter>
+    </ClCompile>
+    <ClCompile Include="include\date\tz.cpp">
+      <Filter>Source Files\date</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\fmt\chrono.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\color.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\compile.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\core.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\format.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\format-inl.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\locale.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\os.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\ostream.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\posix.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\printf.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fmt\ranges.h">
+      <Filter>Header Files\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="include\crc32\Crc32.h">
+      <Filter>Header Files\crc32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\chrono_io.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\date.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\ios.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\islamic.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\iso_week.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\julian.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\ptz.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\solar_hijri.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\tz.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+    <ClInclude Include="include\date\tz_private.h">
+      <Filter>Header Files\date</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
