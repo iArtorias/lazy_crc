@@ -31,7 +31,7 @@ constexpr const wchar_t * MSG_INFO_SFV_CREATED{ L"SFV file created '{}'\n" };
 constexpr const wchar_t * MSG_ERROR_NOT_EXIST{ L"The specified file '{}' doesn't exist.\n\nPress enter to exit the program...\n" };
 constexpr const wchar_t * MSG_ERROR_FILESIZE{ L"Unable to obtain the file size for {}\n" };
 constexpr const wchar_t * MSG_ERROR_RELATIVE_PATH{ L"Unable to obtain the relative path for {}\n" };
-constexpr const wchar_t * MSG_ERROR_UKNOWN_FILE{ L"The specified item is not a regular file or directory.\n\nPress enter to exit the program...\n" };
+constexpr const wchar_t * MSG_ERROR_UNKNOWN_FILE{ L"The specified item is not a regular file or directory.\n\nPress enter to exit the program...\n" };
 
 namespace fs = std::filesystem;
 namespace ch = std::chrono;
@@ -87,8 +87,6 @@ inline void process_file(
             return;
         }
 
-        std::unique_ptr<char[]> buffer( new char[file_size] );
-
         uint32_t crc{ 0x0 };
         size_t bytes_processed{ 0x0 };
 
@@ -97,15 +95,17 @@ inline void process_file(
             auto bytes_left = file_size - bytes_processed;
             auto chunk_size = (CHUNK_SIZE < bytes_left) ? CHUNK_SIZE : bytes_left;
 
-            auto const data = buffer.get() + bytes_processed;
+            std::unique_ptr<char[]> buffer( new char[chunk_size] );
+            auto const data = buffer.get();
 
             file.read( data, chunk_size );
             crc = crc32_16bytes_prefetch( data, chunk_size, crc );
+            buffer.reset();
 
             bytes_processed += chunk_size;
+            file.seekg( bytes_processed, std::ios::beg );
         }
-        buffer.reset();
-
+       
         if (!path_dir.empty())
         {
             auto relative = fs::path( fs::relative( path_file, path_dir, ec ).u16string() );
@@ -166,7 +166,7 @@ int wmain( int argc, wchar_t **argv )
 {
     _setmode( _fileno( stdout ), _O_U16TEXT );
 
-    msg_write( MSG_INFO_VERSION, L"1.0.0" );
+    msg_write( MSG_INFO_VERSION, L"1.1.0" );
 
     if (argc < 0x2)
     {
@@ -212,7 +212,7 @@ int wmain( int argc, wchar_t **argv )
     }    
     else
     {
-        msg_write( MSG_ERROR_UKNOWN_FILE );
+        msg_write( MSG_ERROR_UNKNOWN_FILE );
         static_cast<void>(std::getchar());
 
         return -1;
