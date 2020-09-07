@@ -18,8 +18,8 @@
 // Crc32 (https://github.com/stbrumme/crc32)
 #include <crc32/Crc32.h>
 
-// 4096 bytes
-const size_t CHUNK_SIZE { 4 * 1024 };
+// 1 Mb
+const size_t CHUNK_SIZE { 1024 * 1024 };
 
 // Common messages
 constexpr const wchar_t * MSG_INFO_VERSION{ L"LazyCRC, {}\n\n" };
@@ -99,7 +99,7 @@ inline void process_file(
             auto const data = buffer.get();
 
             file.read( data, chunk_size );
-            crc = crc32_16bytes_prefetch( data, chunk_size, crc );
+            crc = crc32_2x16bytes_prefetch( data, chunk_size, crc );
             buffer.reset();
 
             bytes_processed += chunk_size;
@@ -166,7 +166,7 @@ int wmain( int argc, wchar_t **argv )
 {
     _setmode( _fileno( stdout ), _O_U16TEXT );
 
-    msg_write( MSG_INFO_VERSION, L"1.1.0" );
+    msg_write( MSG_INFO_VERSION, L"1.2.0" );
 
     if (argc < 0x2)
     {
