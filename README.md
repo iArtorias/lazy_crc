@@ -1,5 +1,7 @@
 # **LazyCRC**
 
+[![GitHub All Releases](https://img.shields.io/github/downloads/iArtorias/lazy_crc/total.svg)](https://github.com/iArtorias/lazy_crc/releases)
+
 ### A fast, yet tiny tool to calculate the CRC32 and create the .SFV file
 
 ## Usage
