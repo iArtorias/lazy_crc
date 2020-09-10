@@ -1,5 +1,6 @@
 # **LazyCRC**
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d48b3ae4ade342e9942bf76dd5816c8f)](https://app.codacy.com/manual/iArtorias/lazy_crc?utm_source=github.com&utm_medium=referral&utm_content=iArtorias/lazy_crc&utm_campaign=Badge_Grade_Dashboard)
 [![GitHub All Releases](https://img.shields.io/github/downloads/iArtorias/lazy_crc/total.svg)](https://github.com/iArtorias/lazy_crc/releases)
 
 ### A fast, yet tiny tool to calculate the CRC32 and create the .SFV file
