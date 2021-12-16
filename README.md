@@ -11,6 +11,12 @@
 lazy_crc <file|directory>
 ```
 
+*or*
+
+```
+lazy_crc <path_to_sfv_file> --check
+```
+
 ## Benchmark
 
 - **985 MB** file (**1,032,863,429** bytes) : **Elapsed time: 0h 0m 1s** *
