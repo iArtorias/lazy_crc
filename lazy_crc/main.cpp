@@ -92,6 +92,19 @@ inline std::wstring u16_to_wstring( std::u16string_view ustr )
 }
 
 
+// Convert wstring to uppercase
+inline std::wstring str_to_uppercase( std::wstring str )
+{
+    std::transform( str.begin(), str.end(), str.begin(),
+        []( wchar_t c ) 
+    { 
+        return std::toupper( c ); 
+    });
+
+    return str;
+}
+
+
 // Append the string with 'bad' files (does not exist, invalid CRC etc)
 inline void append_bad_files( std::u16string ustr, std::u16string reason )
 {
@@ -161,6 +174,9 @@ inline void process_file(
         uint32_t crc{ 0x0 };
         size_t bytes_processed{ 0x0 };
 
+        if (file_size == 0x0)
+            return crc;
+
         while (bytes_processed < file_size)
         {
             auto bytes_left = file_size - bytes_processed;
@@ -229,14 +245,14 @@ inline void process_file(
                                 if (std::regex_search( line_conv, regex_match, regex ))
                                 {
                                     fs::path path_in_sfv = fs::path( trim_str( regex_match[1].str(), ' ' ) );
-                                    std::wstring crc_in_sfv = regex_match[2].str();
+                                    std::wstring crc_in_sfv = str_to_uppercase( regex_match[2].str() );
 
                                     if (!path_in_sfv.empty() && !crc_in_sfv.empty())
                                     {
                                         auto path_in_sfv_full = parent_path / path_in_sfv;
                                         auto file_crc = try_open_file( path_in_sfv_full );
 
-                                        if (!file_crc || file_crc.peek() == std::ifstream::traits_type::eof())
+                                        if (!file_crc)
                                             append_bad_files( path_in_sfv.u16string(), u"Unable to open the file" );
                                         else
                                         {
@@ -331,7 +347,7 @@ int wmain( int argc, wchar_t **argv )
     _setmode( _fileno( stdout ), _O_U16TEXT );
     #pragma warning( pop ) 
 
-    msg_write( MSG_INFO_VERSION, L"1.3.0" );
+    msg_write( MSG_INFO_VERSION, L"1.3.1" );
 
     if (argc < 0x2)
     {
