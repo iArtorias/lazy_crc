@@ -1,6 +1,5 @@
 # **LazyCRC**
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d48b3ae4ade342e9942bf76dd5816c8f)](https://app.codacy.com/manual/iArtorias/lazy_crc?utm_source=github.com&utm_medium=referral&utm_content=iArtorias/lazy_crc&utm_campaign=Badge_Grade_Dashboard)
 [![GitHub All Releases](https://img.shields.io/github/downloads/iArtorias/lazy_crc/total.svg)](https://github.com/iArtorias/lazy_crc/releases)
 
 ### A fast, yet tiny tool to calculate the CRC32 and create the .SFV file
@@ -19,13 +18,15 @@ lazy_crc <path_to_sfv_file> --check
 
 ## Benchmark
 
-- **985 MB** file (**1,032,863,429** bytes) : **Elapsed time: 0h 0m 1s** *
-- **4.03 GB** file (**4,328,447,109** bytes) : **Elapsed time: 0h 0m 6s** *
-- **7.95 GB** file (**8,537,629,034** bytes) : **Elapsed time: 0h 0m 13s** *
-- **14.3 GB** file (**15,355,753,472** bytes) : **Elapsed time: 0h 0m 23s** *
-- **35 GB** file (**37,580,963,840** bytes) : **Elapsed time: 0h 0m 56s** *
+| File size (bytes)  | Result time |
+| ------------- | ------------- |
+| 270,708,736  | 0h 0m 0s 147ms  |
+| 1,081,618,432  | 0h 0m 0s 528ms  |
+| 1,836,064,768  | 0h 0m 0s 815ms  |
+| 4,388,488,186  | 0h 0m 1s 914ms  |
+| 32,237,408,256  | 0h 0m 13s 879ms  |
 
-_* All the tests were performed on **Samsung 256GB PM981 NVMe PCIe M.2** (**MZVLB256HAHQ-00000**)_
+_* All the tests were performed on **Samsung 980 Pro NVMe PCle 4.0 (2 Tb)**_
 
 ## Notes
 - **UTF-8** / **UTF-16** file names are supported
@@ -40,4 +41,4 @@ _* All the tests were performed on **Samsung 256GB PM981 NVMe PCIe M.2** (**MZVL
 
 ## Compilation notes
 
-- **Visual Studio 2019** is recommended to compile this project
+- **Visual Studio 2022	** is recommended to compile this project

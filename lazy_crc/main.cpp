@@ -19,15 +19,12 @@
 // Crc32 (https://github.com/stbrumme/crc32)
 #include <crc32/Crc32.h>
 
-// 1 Mb
-const size_t CHUNK_SIZE { 1024 * 1024 };
-
 // Common messages
 constexpr const wchar_t * MSG_INFO_VERSION{ L"LazyCRC, {}\n\n" };
 constexpr const wchar_t * MSG_INFO_USAGE{ L"usage: lazy_crc <file|directory>\nor\nlazy_crc <path_to_sfv_file> --check\n\nPress enter to exit the program...\n" };
 constexpr const wchar_t * MSG_INFO_PROCESSING{ L"Processing '{}'\n" };
 constexpr const wchar_t * MSG_INFO_PRESS_ENTER{ L"\nPress enter to exit the program...\n" };
-constexpr const wchar_t * MSG_INFO_ELAPSED_TIME{ L"Elapsed time: {}h {}m {}s\n\nPress enter to exit the program...\n" };
+constexpr const wchar_t * MSG_INFO_ELAPSED_TIME{ L"Elapsed time: {}h {}m {}s {}ms\n\nPress enter to exit the program...\n" };
 constexpr const wchar_t * MSG_INFO_SFV_CREATED{ L"SFV file created '{}'\n" };
 constexpr const wchar_t * MSG_INFO_SFV_CHECK_SUCCESS{ L"No errors happened while checking SFV file\n" };
 constexpr const wchar_t * MSG_ERROR_FILE_OPEN{ L"Can not open the specified file '{}'\n" };
@@ -96,9 +93,9 @@ inline std::wstring u16_to_wstring( std::u16string_view ustr )
 inline std::wstring str_to_uppercase( std::wstring str )
 {
     std::transform( str.begin(), str.end(), str.begin(),
-        []( wchar_t c ) 
-    { 
-        return std::toupper( c ); 
+        []( wchar_t c )
+    {
+        return std::toupper( c );
     });
 
     return str;
@@ -121,21 +118,22 @@ inline void process_file(
     msg_write( MSG_INFO_PROCESSING, path_file.c_str() );
 
     // Try to open the required file
-    auto try_open_file = [] ( const fs::path& file_path )
+    auto try_open_file = [] ( const fs::path& file_path ) -> FILE *
     {
-        std::ifstream file( file_path, std::ios::binary );
+        FILE * file;
+        errno_t err = _wfopen_s( &file, file_path.generic_wstring().data(), L"rb" );
 
-        if (!file.good() || file.fail())
+        if (err != 0)
         {
             msg_write( MSG_ERROR_FILE_OPEN, file_path.c_str() );
-            return std::ifstream{};
+            return nullptr;
         }
 
         return file;
     };
 
     // Get the required file size
-    auto get_file_size = [] ( const fs::path& file_path, std::ifstream& file_in ) -> size_t
+    auto get_file_size = [] ( const fs::path& file_path, FILE * file_in ) -> size_t
     {
         std::error_code ec;
         auto size = static_cast<size_t>(fs::file_size( file_path, ec ));
@@ -143,7 +141,7 @@ inline void process_file(
         if (ec)
         {
             msg_write( MSG_ERROR_FILESIZE, file_path.c_str() );
-            file_in.close();
+            fclose( file_in );
 
             return -1;
         }
@@ -152,7 +150,7 @@ inline void process_file(
     };
 
     // Obtain the relative path
-    auto get_relative_path = [] ( const fs::path& file_path, const fs::path& dir_path, std::ifstream& file_in ) -> fs::path
+    auto get_relative_path = [] ( const fs::path& file_path, const fs::path& dir_path, FILE * file_in ) -> fs::path
     {
         std::error_code ec;
         auto relative = fs::path( fs::relative( file_path, dir_path, ec ).u16string() );
@@ -160,7 +158,7 @@ inline void process_file(
         if (ec)
         {
             msg_write( MSG_ERROR_RELATIVE_PATH, file_path.c_str() );
-            file_in.close();
+            fclose( file_in );
 
             return fs::path{};
         }
@@ -169,35 +167,61 @@ inline void process_file(
     };
 
     // Calculate the CRC hash
-    auto calculate_crc = [] ( std::ifstream& file_in, const size_t& file_size )
+    auto calculate_crc = [] ( FILE * file_in, const std::size_t& file_size )
     {
-        uint32_t crc{ 0x0 };
-        size_t bytes_processed{ 0x0 };
+        std::uint32_t crc{ 0x0 };
+        std::size_t bytes_processed{ 0x0 };
 
         if (file_size == 0x0)
             return crc;
 
+        // 64 Kb (default)
+        std::size_t block_size { 65536 };
+
+        // Less than 64 kb
+        if (file_size < 65536)
+            block_size = 4096; // 4 Kb
+
+        // More than 64 Kb and less than 1 Mb
+        else if (file_size > 65536 && file_size < 1048576)
+            block_size = 65536; // 64 Kb
+
+        // More than 1 Mb and less than 256 Mb
+        else if (file_size > 1048576 && file_size < 268435456)
+            block_size = 131072; // 128 Kb
+
+        // More than 256 Mb and less than 500 Mb
+        else if (file_size > 268435456 && file_size < 524288000)
+            block_size = 262144; // 256 Kb
+
+        // More than 500 Mb and less than 1 Gb
+        else if (file_size > 524288000 && file_size < 1073741824)
+            block_size = 1048576; // 1 Mb
+
+        // More than 1 Gb and less than 4 Gb
+        else if (file_size > 1073741824)
+            block_size = 4194304; // 4 Mb
+
         while (bytes_processed < file_size)
         {
             auto bytes_left = file_size - bytes_processed;
-            auto chunk_size = (CHUNK_SIZE < bytes_left) ? CHUNK_SIZE : bytes_left;
+            auto chunk_size = (block_size < bytes_left) ? block_size : bytes_left;
 
             std::unique_ptr<char[]> buffer( new char[chunk_size] );
             auto const data = buffer.get();
 
-            file_in.read( data, chunk_size );
+            fread( data, 1, chunk_size, file_in );
             crc = crc32_2x16bytes_prefetch( data, chunk_size, crc );
             buffer.reset();
 
             bytes_processed += chunk_size;
-            file_in.seekg( bytes_processed, std::ios::beg );
         }
 
         return crc;
     };
 
     // Insert the files to the map (including CRC)
-    auto insert_files = [] ( const fs::path& file, std::wstring_view crc  )
+    auto insert_files = [] ( const fs::path& file, std::wstring_view crc )
     {
         std::lock_guard guard( m_files_mtx );
         m_files.try_emplace( file, crc );
@@ -267,9 +291,9 @@ inline void process_file(
                                                 if (crc != crc_in_sfv)
                                                     append_bad_files( path_in_sfv.u16string(), u"CRC does not match" );
                                             }
-                                        }
 
-                                        file_crc.close();
+                                            fclose( file_crc );
+                                        }
                                     }
                                 }
                             }
@@ -286,13 +310,13 @@ inline void process_file(
             }
         }
 
-        file.close();
+        fclose( file );
     }
 }
 
 
 // Write the output SFV file
-inline void write_sfv( 
+inline void write_sfv(
     const fs::path & path_sfv )
 {
     if (m_check_sfv)
@@ -347,7 +371,7 @@ int wmain( int argc, wchar_t **argv )
     _setmode( _fileno( stdout ), _O_U16TEXT );
     #pragma warning( pop ) 
 
-    msg_write( MSG_INFO_VERSION, L"1.3.1" );
+    msg_write( MSG_INFO_VERSION, L"1.4.0" );
 
     if (argc < 0x2)
     {
@@ -384,9 +408,9 @@ int wmain( int argc, wchar_t **argv )
         path_sfv = path_file / path_file.filename() += ".sfv";
         time_start = ch::steady_clock::now();
 
-        for (auto & entry : fs::recursive_directory_iterator( path_file ))
+        for (auto & entry : fs::recursive_directory_iterator( path_file, fs::directory_options::skip_permission_denied ))
         {
-            if (fs::is_regular_file( entry ))
+            if (entry.is_regular_file() && entry.path().filename() != L"$RECYCLE.BIN")
                 process_file( entry, path_file );
         }
 
@@ -397,7 +421,7 @@ int wmain( int argc, wchar_t **argv )
         time_start = ch::steady_clock::now();
         process_file( path_file );
         time_end = ch::steady_clock::now();
-    }    
+    }
     else
     {
         msg_write( MSG_ERROR_UNKNOWN_FILE );
@@ -411,8 +435,9 @@ int wmain( int argc, wchar_t **argv )
 
     // Output the elapsed time
     auto time = date::make_time( time_end - time_start );
-    msg_write( MSG_INFO_ELAPSED_TIME, time.hours().count(), time.minutes().count(), time.seconds().count() );
-    static_cast<void>(std::getchar());
+    msg_write( MSG_INFO_ELAPSED_TIME, time.hours().count(), time.minutes().count(),
+        time.seconds().count(), time.subseconds() / ch::milliseconds { 1 } );
 
+    static_cast<void>(std::getchar());
     return 0x0;
 }
